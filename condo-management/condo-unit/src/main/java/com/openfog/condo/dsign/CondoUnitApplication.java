@@ -1,4 +1,4 @@
-package com.openfog.condo.condounit;
+package com.openfog.condo.dsign;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

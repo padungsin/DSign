@@ -1,4 +1,4 @@
-package com.openfog.condo.condounit.model;
+package com.openfog.condo.dsign.unit.model;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -8,6 +8,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Entity
 public class Unit implements Serializable {
@@ -36,6 +38,7 @@ public class Unit implements Serializable {
 	private double area;
 
 	@Column
+	@JsonFormat(pattern="yyyy-MM-dd")
 	private Date firstTransferDate;
 
 	public Long getId() {

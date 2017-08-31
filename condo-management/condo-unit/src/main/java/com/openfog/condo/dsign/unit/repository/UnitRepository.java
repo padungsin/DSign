@@ -1,4 +1,4 @@
-package com.openfog.condo.condounit.repository;
+package com.openfog.condo.dsign.unit.repository;
 
 import java.util.List;
 
@@ -7,7 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
-import com.openfog.condo.condounit.model.Unit;
+import com.openfog.condo.dsign.unit.model.Unit;
 
 public interface UnitRepository extends CrudRepository<Unit, Long>, PagingAndSortingRepository<Unit, Long> {
 	

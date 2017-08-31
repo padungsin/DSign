@@ -1,40 +1,30 @@
-package com.openfog.condo.condounit.service;
+package com.openfog.condo.dsign.criteria;
 
 import java.io.Serializable;
+import java.util.HashMap;
 
 import org.springframework.data.domain.Sort;
 
-public class UnitCriteria implements Serializable{
-	
-	public enum SearchBy{no, roomno, floor}
+public class Criteria implements Serializable {
+
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private SearchBy searchBy;
-	private String searchText;
-	
+
+	private HashMap<String, Object> parameters = new HashMap<String, Object>();
+
 	private int itemPerPage;
 	private int page;
-	
+
 	private Sort sort;
 
-	public SearchBy getSearchBy() {
-		return searchBy;
+	public HashMap<String, Object> getParameters() {
+		return parameters;
 	}
 
-	public void setSearchBy(SearchBy searchBy) {
-		this.searchBy = searchBy;
-	}
-	
-	
-
-	public String getSearchText() {
-		return searchText;
-	}
-
-	public void setSearchText(String searchText) {
-		this.searchText = searchText;
+	public void setParameters(HashMap<String, Object> parameters) {
+		this.parameters = parameters;
 	}
 
 	public int getItemPerPage() {
@@ -61,9 +51,4 @@ public class UnitCriteria implements Serializable{
 		this.sort = sort;
 	}
 
-	
-	
-	
-	
-	
 }
