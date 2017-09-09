@@ -86,7 +86,7 @@ public class ExcelUtil {
 
 	public static Object getCellValue(final XSSFCell cell) {
 
-		System.out.println(cell.getCellTypeEnum());
+		//System.out.println(cell.getCellTypeEnum());
 		switch (cell.getCellTypeEnum()) {
 		case BOOLEAN:
 			return cell.getBooleanCellValue(); // boolean

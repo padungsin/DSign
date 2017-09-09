@@ -19,7 +19,7 @@ public interface OwnerRepository extends CrudRepository<Owner, Long>, PagingAndS
 
 	public Page<Owner> findAllByUnitId(Long unitId, Pageable pageable);
 
-	public Page<Owner> findByUnitIdAndActive(Long unitId, boolean active, Pageable pageable);
+	public Owner findByUnitIdAndActive(Long unitId, boolean active);
 
 	@Query("Select o from Owner o where o.name like %:name%")
 	public Page<Owner> findAllByNameLike(@Param("name")String name, Pageable pageable);

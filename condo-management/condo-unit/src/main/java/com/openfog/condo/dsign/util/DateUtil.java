@@ -4,6 +4,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 public class DateUtil {
 
@@ -26,6 +27,11 @@ public class DateUtil {
 
 	public static String formatDate(Date inDate, String format) {
 		SimpleDateFormat sf = new SimpleDateFormat(format);
+		return sf.format(inDate);
+	}
+	
+	public static String formatThaiDate(Date inDate, String format) {
+		SimpleDateFormat sf = new SimpleDateFormat(format, new Locale("th", "TH"));
 		return sf.format(inDate);
 	}
 

@@ -1,5 +1,6 @@
 package com.openfog.condo.dsign.transaction.service;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -11,14 +12,13 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.openfog.condo.dsign.account.model.Account;
-import com.openfog.condo.dsign.account.repository.AccountRepository;
 import com.openfog.condo.dsign.transaction.criteria.TransactionCriteria;
 import com.openfog.condo.dsign.transaction.criteria.TransactionCriteria.SearchBy;
 import com.openfog.condo.dsign.transaction.model.Transaction;
 import com.openfog.condo.dsign.transaction.model.Transaction.TransactionStatus;
 import com.openfog.condo.dsign.transaction.model.Transaction.TransactionType;
 import com.openfog.condo.dsign.transaction.repository.TransactionRepository;
+import com.openfog.condo.dsign.utility.repository.NumericConstantRepository;
 
 @Service
 @Transactional
@@ -28,7 +28,7 @@ public class TransactionService {
 	private TransactionRepository transactionRepository;
 
 	@Autowired
-	private AccountRepository accountRepository;
+	private NumericConstantRepository numericConstantRepository;
 
 	public Transaction get(Long id) {
 		return transactionRepository.findOne(id);
@@ -59,30 +59,24 @@ public class TransactionService {
 
 	public Transaction save(Transaction transaction) {
 
-		Account account = accountRepository.findOne(transaction.getAccountId());
+		if (transaction.getTransactionType().equals(TransactionType.expense)) {
+			if (transaction.isHoldingTax()) {
+				double holdingTaxPercent = numericConstantRepository.findByConstantKey("holdingtax.percent").getValue();
+				transaction.setFullAmount(transaction.getAmount());
+				transaction.setHoldingTaxtAmount(transaction.getFullAmount() * holdingTaxPercent / 100);
+				transaction.setAmount(transaction.getFullAmount() - transaction.getHoldingTaxtAmount());
 
-		transaction.setBalanceBefore(account.getBalance());
+				Calendar cal = Calendar.getInstance();
+				cal.setTime(transaction.getTransactionDate());
+				cal.add(Calendar.MONTH, 1);
+				cal.set(Calendar.DATE, 7);
 
-		if (transaction.getTransactionType().equals(TransactionType.income)) {
+				transaction.setRevenueDepartmentDate(cal.getTime());
+			}
 
-			account.setBalance(account.getBalance() + transaction.getAmount());
-		} else {
-
-			account.setBalance(account.getBalance() - transaction.getAmount());
 		}
-
-		transaction.setBalanceAfter(account.getBalance());
-
 		transaction.setTransactionStatus(TransactionStatus.normal);
 		return transactionRepository.save(transaction);
-	}
-
-	public List<Transaction> save(List<Transaction> transactions) {
-
-		for (Transaction transaction : transactions) {
-			transactionRepository.save(transaction);
-		}
-		return transactions;
 	}
 
 	public void cancelTransaction(Long id) throws IncorrectTransactionStatusException {
@@ -93,8 +87,6 @@ public class TransactionService {
 
 		oldTransaction.setTransactionStatus(TransactionStatus.voidTransaction);
 
-		Account account = accountRepository.findOne(oldTransaction.getAccountId());
-
 		Transaction voidTransaction = new Transaction();
 
 		voidTransaction.setAccountId(oldTransaction.getAccountId());
@@ -104,17 +96,12 @@ public class TransactionService {
 		voidTransaction.setTransactionDate(new Date());
 		voidTransaction.setTransactionStatus(TransactionStatus.voidTransactionRef);
 
-		voidTransaction.setBalanceBefore(account.getBalance());
 		if (oldTransaction.getTransactionType().equals(TransactionType.expense)) {
 			voidTransaction.setTransactionType(TransactionType.income);
-			account.setBalance(account.getBalance() + voidTransaction.getAmount());
 		} else {
 			voidTransaction.setTransactionType(TransactionType.expense);
-			account.setBalance(account.getBalance() - voidTransaction.getAmount());
 		}
-		voidTransaction.setBalanceAfter(account.getBalance());
 
-		accountRepository.save(account);
 		transactionRepository.save(voidTransaction);
 		transactionRepository.save(oldTransaction);
 
@@ -122,14 +109,12 @@ public class TransactionService {
 
 	public Transaction adjustTransaction(Transaction newTransaction) throws IncorrectTransactionStatusException {
 
-		Transaction oldTransaction = transactionRepository.findOne(newTransaction.getId());
+		Transaction oldTransaction = transactionRepository.findOne(newTransaction.getReferenceTransaction());
 		if (oldTransaction.getTransactionStatus().equals(TransactionStatus.voidTransaction)) {
 			throw new IncorrectTransactionStatusException("Transaction " + oldTransaction.getId() + " void.");
 		}
 
 		oldTransaction.setTransactionStatus(TransactionStatus.voidTransaction);
-
-		Account account = accountRepository.findOne(oldTransaction.getAccountId());
 
 		Transaction voidTransaction = new Transaction();
 
@@ -140,39 +125,16 @@ public class TransactionService {
 		voidTransaction.setTransactionDate(new Date());
 		voidTransaction.setTransactionStatus(TransactionStatus.voidTransactionRef);
 
-		voidTransaction.setBalanceBefore(account.getBalance());
 		if (oldTransaction.getTransactionType().equals(TransactionType.income)) {
 			voidTransaction.setTransactionType(TransactionType.expense);
-			account.setBalance(account.getBalance() - voidTransaction.getAmount());
 		} else {
 			voidTransaction.setTransactionType(TransactionType.income);
-			account.setBalance(account.getBalance() + voidTransaction.getAmount());
 		}
-		voidTransaction.setBalanceAfter(account.getBalance());
 
 		transactionRepository.save(voidTransaction);
 		transactionRepository.save(oldTransaction);
 
-		
-		
-		newTransaction.setBalanceBefore(account.getBalance());
-		if (oldTransaction.getTransactionType().equals(TransactionType.income)) {
-			newTransaction.setTransactionType(TransactionType.income);
-			account.setBalance(account.getBalance() + newTransaction.getAmount());
-		} else {
-			oldTransaction.setTransactionType(TransactionType.expense);
-			account.setBalance(account.getBalance() - newTransaction.getAmount());
-		}
-
-		newTransaction.setId(null);
-		newTransaction.setBalanceAfter(account.getBalance());
-		newTransaction.setReferenceTransaction(oldTransaction.getId());
-		newTransaction.setTransactionStatus(TransactionStatus.normal);
-		
-		voidTransaction.setTransactionDate(new Date());
-
-		transactionRepository.save(newTransaction);
-		accountRepository.save(account);
+		save(newTransaction);
 
 		return newTransaction;
 

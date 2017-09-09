@@ -17,7 +17,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 public class Transaction implements Serializable {
 
 	public enum TransactionType {
-		expense, income
+		expense, income, holdingTax
 	}
 
 	public enum TransactionStatus {
@@ -41,9 +41,26 @@ public class Transaction implements Serializable {
 	private String detail;
 
 	
-	
 	@Column
 	private double amount;
+	
+	
+	@Column
+	private double fullAmount;
+	
+	
+	@Column
+	private double holdingTaxtAmount;
+	
+	@Column
+	private boolean holdingTax;
+	
+	
+
+	@Column
+	@JsonFormat(pattern = "yyyy-MM-dd")
+	private Date revenueDepartmentDate;
+
 
 	@Column
 	@Enumerated(EnumType.STRING)
@@ -56,19 +73,11 @@ public class Transaction implements Serializable {
 	
 	@Column
 	private Long accountId;
-	
-	
-	@Column
-	private double balanceBefore;
-
-	@Column
-	private double balanceAfter;
-	
-	@Column
-	private Long receiptId;
-
 
 	
+	@Column
+	private Long paymentId;
+
 	@Column
 	private Long referenceTransaction;
 	
@@ -106,23 +115,41 @@ public class Transaction implements Serializable {
 	public void setAmount(double amount) {
 		this.amount = amount;
 	}
+
+	public double getFullAmount() {
+		return fullAmount;
+	}
+
+	public void setFullAmount(double fullAmount) {
+		this.fullAmount = fullAmount;
+	}
+
+	public double getHoldingTaxtAmount() {
+		return holdingTaxtAmount;
+	}
+
+	public void setHoldingTaxtAmount(double holdingTaxtAmount) {
+		this.holdingTaxtAmount = holdingTaxtAmount;
+	}
+
+	public boolean isHoldingTax() {
+		return holdingTax;
+	}
 	
-	
-
-	public double getBalanceBefore() {
-		return balanceBefore;
+	public boolean getHoldingTax() {
+		return holdingTax;
 	}
 
-	public void setBalanceBefore(double balanceBefore) {
-		this.balanceBefore = balanceBefore;
+	public void setHoldingTax(boolean holdingTax) {
+		this.holdingTax = holdingTax;
 	}
 
-	public double getBalanceAfter() {
-		return balanceAfter;
+	public Date getRevenueDepartmentDate() {
+		return revenueDepartmentDate;
 	}
 
-	public void setBalanceAfter(double balanceAfter) {
-		this.balanceAfter = balanceAfter;
+	public void setRevenueDepartmentDate(Date revenueDepartmentDate) {
+		this.revenueDepartmentDate = revenueDepartmentDate;
 	}
 
 	public TransactionType getTransactionType() {
@@ -132,8 +159,6 @@ public class Transaction implements Serializable {
 	public void setTransactionType(TransactionType transactionType) {
 		this.transactionType = transactionType;
 	}
-	
-	
 
 	public TransactionStatus getTransactionStatus() {
 		return transactionStatus;
@@ -151,15 +176,15 @@ public class Transaction implements Serializable {
 		this.accountId = accountId;
 	}
 
-	public Long getReceiptId() {
-		return receiptId;
+
+
+	public Long getPaymentId() {
+		return paymentId;
 	}
 
-	public void setReceiptId(Long receiptId) {
-		this.receiptId = receiptId;
+	public void setPaymentId(Long paymentId) {
+		this.paymentId = paymentId;
 	}
-	
-	
 
 	public Long getReferenceTransaction() {
 		return referenceTransaction;
@@ -177,7 +202,5 @@ public class Transaction implements Serializable {
 		this.remark = remark;
 	}
 
-	
-	
 
 }

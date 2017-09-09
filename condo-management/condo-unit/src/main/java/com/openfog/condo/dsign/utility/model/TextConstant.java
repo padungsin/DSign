@@ -1,4 +1,4 @@
-package com.openfog.condo.dsign.account.model;
+package com.openfog.condo.dsign.utility.model;
 
 import java.io.Serializable;
 
@@ -9,7 +9,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 @Entity
-public class Account implements Serializable {
+public class TextConstant implements Serializable {
+
 	/**
 	 * 
 	 */
@@ -20,8 +21,10 @@ public class Account implements Serializable {
 	private Long id;
 
 	@Column
-	private String name;
+	private String constantKey;
 
+	@Column
+	private String value;
 
 	public Long getId() {
 		return id;
@@ -31,17 +34,22 @@ public class Account implements Serializable {
 		this.id = id;
 	}
 
-	public String getName() {
-		return name;
+
+
+	public String getConstantKey() {
+		return constantKey;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setConstantKey(String constantKey) {
+		this.constantKey = constantKey;
 	}
 
+	public String getValue() {
+		return value;
+	}
 
+	public void setValue(String value) {
+		this.value = value;
+	}
 
-	
-	
-	
 }

@@ -38,6 +38,12 @@ public class WaterUsageHistory implements Serializable {
 	@JsonFormat(pattern = "yyyy-MM-dd")
 	private Date noteDate;
 
+	
+	@Column
+	@JsonFormat(pattern = "yyyy-MM-dd")
+	private Date previousNoteDate;
+	
+	
 	public Long getId() {
 		return id;
 	}
@@ -85,6 +91,14 @@ public class WaterUsageHistory implements Serializable {
 
 	public void setNoteDate(Date noteDate) {
 		this.noteDate = noteDate;
+	}
+
+	public Date getPreviousNoteDate() {
+		return previousNoteDate;
+	}
+
+	public void setPreviousNoteDate(Date previousNoteDate) {
+		this.previousNoteDate = previousNoteDate;
 	}
 
 	

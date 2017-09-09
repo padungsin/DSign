@@ -82,22 +82,6 @@ public class WaterMeterController {
 		}
 	}
 
-	@RequestMapping(value = "/generate", method = RequestMethod.GET)
-	public void downloadWaterForm(HttpServletRequest request, HttpServletResponse response) {
-		File output;
-		try {
-			output = waterMeterService.generateWaterForm();
-
-			response.setContentType("application/pdf");
-			response.addHeader("Content-Disposition", "attachment; filename=" + output.getName());
-
-			response.getOutputStream().write(FileUtils.readFileToByteArray(output));
-			response.getOutputStream().flush();
-		} catch (IOException | ParseException e) {
-			e.printStackTrace();
-		}
-	}
-	
 
 	@RequestMapping(value = "/uploadWaterUsage", method = RequestMethod.POST)
 	public void uploadWaterUsage(@RequestParam("waterFile") MultipartFile file) {
@@ -112,11 +96,29 @@ public class WaterMeterController {
 				waterMeterService.importWaterForm(waterFile);
 
 				
-			} catch (IOException | ParseException | ImportTwiceException e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
 	}
+	
+
+	@RequestMapping(value = "/downloadMergeWater/{month}", method = RequestMethod.GET)
+	public void downloadWaterForm(HttpServletRequest request, HttpServletResponse response, @PathVariable String month) {
+		File output;
+		try {
+			output = waterMeterService.mergeWaterInvoice(month);
+
+			response.setContentType("application/pdf");
+			response.addHeader("Content-Disposition", "attachment; filename=" + output.getName());
+
+			response.getOutputStream().write(FileUtils.readFileToByteArray(output));
+			response.getOutputStream().flush();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
 
 
 }

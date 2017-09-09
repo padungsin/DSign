@@ -1,0 +1,5 @@
+UPDATE water_meter SET note_date =previous_note_date, current_unit = previous_unit;
+TRUNCATE TABLE water_usage_history;
+TRUNCATE TABLE invoice;
+TRUNCATE TABLE invoice_item;
+UPDATE running_id SET current_id=1;

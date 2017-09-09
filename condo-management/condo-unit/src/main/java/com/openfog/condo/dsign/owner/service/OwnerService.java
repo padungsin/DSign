@@ -40,10 +40,7 @@ public class OwnerService {
 		} else if (criteria.getSearchBy().equals(SearchBy.unit)) {
 			return ownerRepository.findAllByUnitId(Long.parseLong((String)criteria.getParameters().get("unitId")),
 					createPageRequest(criteria));
-		} else if (criteria.getSearchBy().equals(SearchBy.unitActive)) {
-			return ownerRepository.findByUnitIdAndActive(Long.parseLong((String)criteria.getParameters().get("unitId")), true,
-					createPageRequest(criteria));
-		}
+		} 
 
 		return null;
 	}
